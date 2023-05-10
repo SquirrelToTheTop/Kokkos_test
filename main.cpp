@@ -1,6 +1,7 @@
 #include <iostream>
 
 // Hzlnt
+#include "src/io/Reader_Hercule.hpp"
 #include "src/utils/array.hpp"
 
 // Kokkos stuff
@@ -19,8 +20,16 @@ int main( int argc, char *argv[] ){
 
   Kokkos::initialize( argc, argv );
   {
+    
+    int timestepID = 0, contextID = 0;
+    Reader_Hercule lecteur;
 
-    const size_t nvals = 885000000;
+    lecteur.initializeReader();
+    lecteur.open( "/home/squirrel/data/exa_milkyway/run_512_frag" );
+
+    lecteur.getAMRData( timestepID, contextID, "Ramses3D" );
+
+    const size_t nvals = 8850000;
     DataArray1D<float> a( "test", nvals );
 
     // Initialize y vector.
@@ -30,7 +39,7 @@ int main( int argc, char *argv[] ){
 
     double sum = 0.0;
     Kokkos::parallel_reduce("kpr_sum", nvals, KOKKOS_LAMBDA ( const int& idx, double& lsum ) {
-        lsum += a[ idx ] + 1 ;
+      lsum += a[ idx ] + 1 ;
     }, sum );
 
 
