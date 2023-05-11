@@ -50,20 +50,48 @@ class Reader_Hercule : public Reader{
     /* Private functions for this class ---------------------------------------------- */
 
     /**
-     * Permet d'acceder a une variable d'un objet XML de Hercule
+     * Permet d'acceder a un attribut d'un objet XML de Hercule.
+     * 
+     * @param hicObj   (in): objet hercule portant l'attribut
+     * @param attrName (in): identifiant (unique) de l'attribut
     */
     template<typename var_t>
     inline
-    var_t _hic_getVar( HIc_Obj &hicObj, const std::string &varName ) const {
+    var_t _hic_getVar( HIc_Obj &hicObj, const std::string &attrName ) const {
+
       var_t tmp = static_cast<var_t>( 0 );
+      
       try{
-          hicObj.getAttrVal( varName, tmp );
+          hicObj.getAttrVal( attrName, tmp );
       } catch ( std::exception &_exp ){
-          std::cerr << "\t> [accessVar] Failed for '" << varName << "'" << std::endl;
+          std::cerr << "\t> [Reader_Hercule::_hic_getVar] Failed for '" << attrName << "'" << std::endl;
           std::cerr << "\t\t> Error: " << _exp.what() << std::endl;
       }
 
       return tmp;
     }
+
+    /**
+     * Permet d'acceder a un attribut de type tableau d'un objet XML de Hercule en remplissant un tableau
+     * pré-alloué.
+     * 
+     * @param hicObj   (in): objet hercule portant l'attribut
+     * @param attrName (in): identifiant (unique) de l'attribut
+     * @param nelem    (in): nombre d'élements de l'attribut
+    */
+    template<typename var_t>
+    inline
+    void _hic_getVarTab1d( HIc_Obj &hicObj, const std::string &attrName, DataArray1D_host<var_t> &arr ) const {
+      assert( arr.extent(0) > 0 );
+
+      try{
+          hicObj.getAttrVal( attrName, arr.data(), arr.size() ); // nElemRead );
+      } catch ( std::exception &_exp ){
+          std::cerr << "\t> [accessVar] Failed for '" << attrName << "'" << std::endl;
+          std::cerr << "\t\t> Error: " << _exp.what() << std::endl;  
+      }
+    }
+
+
 
 };

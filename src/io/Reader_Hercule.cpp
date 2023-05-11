@@ -56,9 +56,37 @@ LightAMR Reader_Hercule::getAMRData( int tit, int did, const std::string &objNam
   }
 
   HIc_Obj ob_root = _hic_ctx.getRoot();
-  HIc_Obj ob = ob_root.searchUniq( objName );
+  HIc_Obj ob_amr = ob_root.searchUniq( objName );
 
+  int64_t nbCells = _hic_getVar<int64_t>( ob_amr, "nbElements" );
+  
+  auto & refArr = lamr.getRefinementArrayPtr();
+  Kokkos::resize( refArr, nbCells );
+  _hic_getVarTab1d<uint8_t>( ob_amr, "isParentInt", refArr );
 
+  auto & ownArr = lamr.getOwnershipArrayPtr();
+  Kokkos::resize( ownArr, nbCells );
+  _hic_getVarTab1d<uint8_t>( ob_amr, "isMaskInt", ownArr );
+
+  uint64_t nlevels = _hic_getVar<uint64_t>( ob_amr, "nbLevels" );
+
+  auto & ncplArr = lamr.getNcplArrayPtr();
+  Kokkos::resize( ncplArr, nlevels );
+  _hic_getVarTab1d<uint64_t>( ob_amr, "nbElementsPerLevel", ncplArr );
+
+#define DEBUG_READER
+#ifdef DEBUG_READER
+  std::cout << "[INFO][Reader_Hercule]: load 'nbElements' {" << ob_amr.getAttrTypeName( "nbElements" ) 
+            << "} to {" << getCustomTypeName( nbCells ) << "}, value : " << nbCells << std::endl;
+  std::cout << "[INFO][Reader_Hercule]: load 'isParentInt' {" << ob_amr.getAttrTypeName( "isParentInt" ) 
+            << "} to {" << getCustomTypeName( refArr ) << "}" << std::endl;
+  std::cout << "[INFO][Reader_Hercule]: load 'isMaskInt' {" << ob_amr.getAttrTypeName( "isMaskInt" ) 
+            << "} to {" << getCustomTypeName( ownArr ) << "}" << std::endl;
+  std::cout << "[INFO][Reader_Hercule]: load 'nbLevels' {" << ob_amr.getAttrTypeName( "nbLevels" ) 
+            << "} to {" << getCustomTypeName( nlevels ) << "}, value : " << nlevels << std::endl;
+    std::cout << "[INFO][Reader_Hercule]: load 'nbElementsPerLevel' {" << ob_amr.getAttrTypeName( "nbElementsPerLevel" ) 
+            << "} to {" << getCustomTypeName( ncplArr ) << "}" << std::endl;
+#endif
 
   return std::move( lamr );
 }

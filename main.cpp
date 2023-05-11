@@ -21,15 +21,15 @@ int main( int argc, char *argv[] ){
   Kokkos::initialize( argc, argv );
   {
     
-    int timestepID = 0, contextID = 0;
+    int timestepID = 12, contextID = 0;
     Reader_Hercule lecteur;
 
     lecteur.initializeReader();
-    lecteur.open( "/home/squirrel/data/exa_milkyway/run_512_frag" );
+    lecteur.open( "/home/squirrel/work/ramses_GrdCh/hercule_hdep" );
 
     lecteur.getAMRData( timestepID, contextID, "Ramses3D" );
 
-    const size_t nvals = 8850000;
+    const size_t nvals = 8850;
     DataArray1D<float> a( "test", nvals );
 
     // Initialize y vector.
