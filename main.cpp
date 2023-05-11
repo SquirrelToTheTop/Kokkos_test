@@ -1,6 +1,7 @@
 #include <iostream>
 
 // Hzlnt
+#include "src/datamodel/collection.hpp"
 #include "src/io/Reader_Hercule.hpp"
 #include "src/utils/array.hpp"
 
@@ -20,14 +21,25 @@ int main( int argc, char *argv[] ){
 
   Kokkos::initialize( argc, argv );
   {
+
+    Collection meshes = Collection(); 
     
     int timestepID = 12, contextID = 0;
     Reader_Hercule lecteur;
 
     lecteur.initializeReader();
     lecteur.open( "/home/squirrel/work/ramses_GrdCh/hercule_hdep" );
+    uint32_t ndomains = lecteur.GetNumberOfDomains();
 
-    lecteur.getAMRData( timestepID, contextID, "Ramses3D" );
+    // This cannot work because Kokkos requires "constness" ...;
+    //
+    // Kokkos::parallel_for( "read_amr", ndomains, KOKKOS_LAMBDA ( const int &idx ) {
+    //   meshes.addItem( idx, lecteur.GetAMRData( timestepID, contextID, "Ramses3D" ) );
+    // });
+
+    for( uint32_t idom=0; idom<ndomains; ++idom ){
+      meshes.addItem( idom, lecteur.GetAMRData( timestepID, contextID, "Ramses3D" ) );
+    }
 
     const size_t nvals = 8850;
     DataArray1D<float> a( "test", nvals );

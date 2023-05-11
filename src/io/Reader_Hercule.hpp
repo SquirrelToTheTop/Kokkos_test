@@ -4,6 +4,9 @@
 // Hercule
 #include "HIc.h"
 
+// for now
+#define DEBUG_READER
+
 HIC_USE;
 
 class Reader_Hercule;
@@ -11,8 +14,10 @@ class Reader_Hercule;
 class Reader_Hercule : public Reader{
 
   public:
+
     Reader_Hercule(){
       _apiInitialized = false;
+      _base_ndomains  = 0;
     };
 
     ~Reader_Hercule() = default;
@@ -27,7 +32,16 @@ class Reader_Hercule : public Reader{
      */
     bool open( const std::string &dir );
 
-    LightAMR getAMRData( int tid, int did, const std::string &objName );
+    /**
+     * Retourne le nombre de sous-domaine contenu dans la base
+    */
+    inline uint32_t GetNumberOfDomains() const{ return _base_ndomains; }
+
+    /**
+     * tid (in): time-index of time to load
+     * did (in): domain-index to load within the time
+    */
+    LightAMR GetAMRData( int tid, int did, const std::string &objName );
 
   private:
 
@@ -43,6 +57,7 @@ class Reader_Hercule : public Reader{
     std::map<std::string, HIc_Obj> _loaded_object;
 
     // liste des indices des temps (en temps de la simulation en floats)
+    uint32_t _base_ndomains;
     std::vector<double> _base_times_indexes;
 
     bool _apiInitialized;
