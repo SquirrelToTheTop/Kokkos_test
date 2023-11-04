@@ -43,7 +43,6 @@ bool Reader_Hercule::open( const std::string &bdir ) {
   _hic_base.getTimeList( _base_times_indexes ); 
   _base_ndomains = _hic_base.getNbDomains();
 
-  // 
 #ifdef DEBUG_READER
   std::cout << "\t> [INFO][Reader_Hercule] Base contains " << _base_times_indexes.size() << " contextes \n";
   std::cout << "\t> [INFO][Reader_Hercule] Base contains " << _base_ndomains << " domains \n";

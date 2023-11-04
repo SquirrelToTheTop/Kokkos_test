@@ -22,29 +22,34 @@ int main( int argc, char *argv[] ){
   Kokkos::initialize( argc, argv );
   {
 
-    Collection meshes = Collection(); 
+    Collection meshes = Collection();
     
     int timestepID = 12, contextID = 0;
     Reader_Hercule lecteur;
 
     lecteur.initializeReader();
-    lecteur.open( "/home/squirrel/work/ramses_GrdCh/hercule_hdep" );
+    lecteur.open( "/local/home/ls256408/work/ramses_GrdCh/blast2d/" );
     uint32_t ndomains = lecteur.GetNumberOfDomains();
 
-    // This cannot work because Kokkos requires "constness" ...;
+    // This cannot work because Kokkos requires "constness" and Hercule does probably not work
+    // with openMP reads
     //
     // Kokkos::parallel_for( "read_amr", ndomains, KOKKOS_LAMBDA ( const int &idx ) {
     //   meshes.addItem( idx, lecteur.GetAMRData( timestepID, contextID, "Ramses3D" ) );
     // });
 
+    // I/O -> doit se passer sur le Host
     for( uint32_t idom=0; idom<ndomains; ++idom ){
-      meshes.addItem( idom, lecteur.GetAMRData( timestepID, contextID, "Ramses3D" ) );
+      HZL_TRACE("[Main] reading domain # " << idom );
+      meshes.addItem( idom, lecteur.GetAMRData( timestepID, contextID, "Ramses2D" ) );
     }
+
+    meshes.testKokkos();
 
     const size_t nvals = 8850;
     DataArray1D<float> a( "test", nvals );
 
-    // Initialize y vector.
+    // Initialize y vector: is the vector copied ?!
     Kokkos::parallel_for( "a_init", nvals, KOKKOS_LAMBDA ( const int &idx ) {
       a[ idx ] = idx;
     });
