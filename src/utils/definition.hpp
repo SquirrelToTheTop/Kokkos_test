@@ -8,6 +8,15 @@
 template <typename type_t> using DataArray1D = Kokkos::View< type_t *, Layout, Device >;
 template <typename type_t> using DataArray1D_host = Kokkos::View< type_t *, Layout, Host >;
 
+// Coordinates system
+struct Logical_Pos_t {
+  uint32_t i, j, k;
+};
+
+struct Cartesian_Pos_t {
+  double x, y, z;
+};
+
 // name type info
 template<typename T> inline std::string getCustomTypeName(const T&){ return typeid(T).name(); }
 template<> inline std::string getCustomTypeName<signed char>(const signed char&){ return "char"; }

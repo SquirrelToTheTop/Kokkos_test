@@ -41,7 +41,7 @@ class Reader_Hercule : public Reader{
      * tid (in): time-index of time to load
      * did (in): domain-index to load within the time
     */
-    LightAMR GetAMRData( int tid, int did, const std::string &objName );
+    LightAMR GetAMRData( int tid, int did, const std::string &objName, int dim );
 
   private:
 

@@ -51,11 +51,13 @@ bool Reader_Hercule::open( const std::string &bdir ) {
   return _hic_base.isOpen();
 }
 
-LightAMR Reader_Hercule::GetAMRData( int tit, int did, const std::string &objName ) {
+LightAMR Reader_Hercule::GetAMRData( int tit, int did, const std::string &objName, int dim ) {
 
-  LightAMR lamr;
+  HZL_TRACE( "[LightAMR Reader_Hercule::GetAMRData] time " << tit << ", domain " << did );
 
-  if( _hic_ctx.isNull() ){
+  LightAMR lamr( dim );
+
+  if( _hic_ctx.isNull() || !_hic_ctx.isOpen() ){
     // assert( tit < static_cast<int>( _base_times_indexes.size() ) );
     _hic_ctx = _hic_base.getCtxPar( _base_times_indexes[ tit ], did );
     _hic_ctx.open();
@@ -126,6 +128,8 @@ LightAMR Reader_Hercule::GetAMRData( int tit, int did, const std::string &objNam
     std::cout << "\t> [INFO][Reader_Hercule]: load 'nbElementsPerLevel' {" << ob_amr.getAttrTypeName( "nbElementsPerLevel" ) 
             << "} to {" << getCustomTypeName( ncplArr ) << "}" << std::endl;
 #endif
-
+  
+  _hic_ctx.close();
+  
   return lamr;
 }
